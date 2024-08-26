@@ -5,9 +5,10 @@
 <configuration>
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="useGeneratedKeys" value="true"/>
     </settings>
 
-<!--    <typeAliases>-->
-<!--&lt;!&ndash;        <typeAlias alias="BoardDto" type="com.fastcampus.ch4.domain.BoardDto"/>&ndash;&gt;-->
-<!--    </typeAliases>-->
+    <typeAliases>
+        <typeAlias alias="BoardDto" type="com.fastcampus.ch4.domain.BoardDto"/>
+    </typeAliases>
 </configuration>
