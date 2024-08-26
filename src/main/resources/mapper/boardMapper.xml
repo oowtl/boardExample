@@ -2,6 +2,56 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.fastcampus.ch4.dao.BoardMapper">
+<mapper namespace="com.fastcampus.ch4.mapper.BoardMapper">
+    <insert id="insert" parameterType="BoardDto" keyProperty="bno">
+        INSERT INTO spring_ch4.board
+        (title,
+         content,
+         writer,
+         view_cnt,
+         comment_cnt,
+         reg_date,
+         up_date)
+        VALUES (#{title},
+                #{content},
+                #{writer},
+                #{viewCnt},
+                #{commentCnt},
+                NOW(),
+                NOW())
+    </insert>
 
+    <select id="select" parameterType="int" resultType="BoardDto">
+        SELECT bno,
+               title,
+               content,
+               writer,
+               view_cnt,
+               comment_cnt,
+               reg_date,
+               up_date
+        FROM spring_ch4.board
+        WHERE bno = #{bno}
+    </select>
+
+
+    <update id="update" parameterType="BoardDto">
+        UPDATE
+        spring_ch4.board
+        SET
+            title = #{title},
+            content = #{content},
+            writer = #{writer},
+            view_cnt = #{viewCnt},
+            comment_cnt = #{commentCnt},
+            up_date = NOW()
+        WHERE
+            bno = #{bno}
+    </update>
+
+    <delete id="delete" parameterType="int">
+        DELETE
+        FROM spring_ch4.board
+        WHERE bno = #{bno}
+    </delete>
 </mapper>
