@@ -5,5 +5,8 @@
 <configuration>
     <typeAliases>
 
+        <!-- notice -->
+        <typeAlias alias="NoticeDto" type="com.fastcampus.ch4.dto.notice.NoticeDto"/>
+
     </typeAliases>
 </configuration>

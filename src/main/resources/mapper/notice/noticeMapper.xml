@@ -3,5 +3,123 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.fastcampus.ch4.dao.notice.NoticeMapper">
+    <!--  전체 글 개수 세는 기능  -->
+    <select id="count" resultType="int">
+        select count(*)
+        from notice
+    </select>
+
+    <!--  일반사용자에게 표시되는 글 개수 세는 기능  -->
+    <select id="countDsply" resultType="int">
+        select count(*)
+        from notice
+        where dsply_chk = 'Y'
+    </select>
+
+    <!--  글 하나 등록  -->
+    <insert id="insert" parameterType="NoticeDto">
+        insert into notice (ntc_cate_code, title, cont, pin_top_chk, pin_top_end_date, dsply_chk, reg_date, reg_id, up_date, up_id)
+        values (#{ntc_cate_code}, #{title}, #{cont}, #{pin_top_chk}, #{pin_top_end_date}, #{dsply_chk}, now(), #{reg_id}, now(), #{reg_id})
+    </insert>
+
+    <!--  글 하나 읽기 (카테고리 이름 없이)  -->
+    <sql id="selectFromNotice">
+        select ntc_seq,
+               ntc_cate_code,
+               title,
+               cont,
+               pin_top_chk,
+               pin_top_end_date,
+               dsply_chk,
+               view_cnt,
+               reg_date,
+               reg_id,
+               up_date,
+               up_id
+        from notice
+    </sql>
+
+    <!--  공지사항 유형 이름과 함께 글 읽기  -->
+    <sql id="selectWithCateName">
+        select ntc_seq,
+               ntc_cate_code,
+               title,
+               cont,
+               pin_top_chk,
+               pin_top_end_date,
+               dsply_chk,
+               view_cnt,
+               reg_date,
+               reg_id,
+               up_date,
+               up_id,
+               (select name from notice_cate c where c.ntc_cate_code = n.ntc_cate_code) cate_name
+        from notice n
+    </sql>
+
+    <!--  글번호로 글 읽기  -->
+    <select id="select" parameterType="int" resultType="NoticeDto">
+        <include refid="selectWithCateName"/>
+        where ntc_seq = #{ntc_seq}
+    </select>
+
+    <!--  게시글 전체목록 읽기  -->
+    <select id="selectAll" resultType="NoticeDto">
+        <include refid="selectWithCateName"/>
+    </select>
+
+    <!--  일반 사용자에게 노출되는 게시글 전체목록 읽기  -->
+    <select id="selectDsply" resultType="NoticeDto">
+        <include refid="selectWithCateName"/>
+        where dsply_chk = 'Y'
+    </select>
+
+    <!--  게시글 한 페이지 읽기  -->
+    <select id="selectPage" parameterType="map" resultType="NoticeDto">
+        <include refid="selectWithCateName"/>
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <!--  일반 사용자에게 노출되는 게시글 한 페이지 읽기  -->
+    <select id="selectPageDsply" parameterType="map" resultType="NoticeDto">
+        <include refid="selectWithCateName"/>
+        where dsply_chk = 'Y'
+        limit #{offset}, #{pageSize}
+    </select>
+
+    <!--  게시글 하나 수정  -->
+    <update id="update" parameterType="NoticeDto">
+        update notice
+        set ntc_cate_code = #{ntc_cate_code},
+            title = #{title}, cont = #{cont},
+            pin_top_chk = #{pin_top_chk},
+            pin_top_end_date = #{pin_top_end_date},
+            dsply_chk = #{dsply_chk},
+            up_date = now(),
+            up_id = #{up_id}
+        where ntc_seq = #{ntc_seq}
+    </update>
+
+    <!--  게시글 하나 삭제  -->
+    <delete id="delete" parameterType="int">
+        delete from notice
+        where ntc_seq = #{ntc_seq}
+    </delete>
+
+    <!--  게시글 전체 삭제  -->
+    <delete id="deleteAll">
+        delete from notice
+    </delete>
+
+    <update id="increaseViewCnt" parameterType="int">
+        update notice
+        set view_cnt = view_cnt + 1
+        where ntc_seq = #{ntc_seq}
+    </update>
+
+    <!--  게시글 여러개 삭제 : 이건 기본적인 CRUD 구현 다 하고난 다음에 하기!!! -->
+
+    <!--  게시글 검색 : 이건 기본적인 CRUD 구현 다 하고난 다음에 하기!!! -->
+
 
 </mapper>
