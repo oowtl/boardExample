@@ -93,7 +93,7 @@ public class BoardDaoTest {
 
         // empty list
         Integer insertedBno = boardDto.getBno();
-        List<BoardDto> selectedList = boardDao.select(insertedBno);
+        List<BoardDto> selectedList = boardDao.selectPage(insertedBno);
         assertFalse(selectedList.isEmpty());
 
         // check
@@ -112,7 +112,7 @@ public class BoardDaoTest {
         int insertResult = boardDao.insert(boardDto);
         assertEquals(SUCCESS, insertResult);
 
-        List<BoardDto> selectedList = boardDao.select(boardDto.getBno());
+        List<BoardDto> selectedList = boardDao.selectPage(boardDto.getBno());
         assertFalse(selectedList.isEmpty());
 
         BoardDto updating = selectedList.get(0);
@@ -139,7 +139,7 @@ public class BoardDaoTest {
 
         // 삭제
         Integer bno = boardDto.getBno();
-        int deleteResult = boardDao.delete(bno);
+        int deleteResult = boardDao.delete(bno, TEST_USER);
         assertEquals(SUCCESS, deleteResult);
 
         boardDto.setTitle(UPDATE_TITLE);
@@ -169,7 +169,7 @@ public class BoardDaoTest {
         assertEquals(SUCCESS, updateResult);
 
         Integer bno = boardDto.getBno();
-        List<BoardDto> selectedList = boardDao.select(bno);
+        List<BoardDto> selectedList = boardDao.selectPage(bno);
         assertFalse(selectedList.isEmpty());
 
         BoardDto selected = selectedList.get(0);
@@ -188,16 +188,16 @@ public class BoardDaoTest {
         assertEquals(SUCCESS, insertResult);
 
         Integer bno = boardDto.getBno();
-        int deleteResult = boardDao.delete(bno);
+        int deleteResult = boardDao.delete(bno, TEST_USER);
         assertEquals(SUCCESS, deleteResult);
 
-        deleteResult = boardDao.delete(bno);
+        deleteResult = boardDao.delete(bno, TEST_USER);
         assertNotEquals(SUCCESS, deleteResult);
     }
 
     // 삭제
     @Test
-    public void delete () {
+    public void deleteForAdminTest() {
         BoardDto boardDto = BoardDto.create();
         boardDto.setTitle(TEST_TITLE);
         boardDto.setContent(TEST_CONTENTS);
@@ -207,10 +207,10 @@ public class BoardDaoTest {
         assertEquals(SUCCESS, insertResult);
 
         Integer bno = boardDto.getBno();
-        int deleteResult = boardDao.delete(bno);
+        int deleteResult = boardDao.delete(bno, TEST_USER);
         assertEquals(SUCCESS, deleteResult);
 
-        List<BoardDto> selected = boardDao.select(bno);
+        List<BoardDto> selected = boardDao.selectPage(bno);
         assertTrue(selected.isEmpty());
     }
 
@@ -227,10 +227,10 @@ public class BoardDaoTest {
 
         Integer bno = boardDto.getBno();
 
-        int deleteResult = boardDao.delete(bno);
+        int deleteResult = boardDao.delete(bno, TEST_USER);
         assertEquals(SUCCESS, deleteResult);
 
-        List<BoardDto> selectedList = boardDao.select(bno);
+        List<BoardDto> selectedList = boardDao.selectPage(bno);
         assertTrue(selectedList.isEmpty());
     }
 
@@ -253,7 +253,7 @@ public class BoardDaoTest {
         assertEquals(SUCCESS, updateResult);
 
         Integer bno = boardDto.getBno();
-        List<BoardDto> selectedList = boardDao.select(bno);
+        List<BoardDto> selectedList = boardDao.selectPage(bno);
         assertFalse(selectedList.isEmpty());
 
         BoardDto selected = selectedList.get(0);
@@ -272,7 +272,7 @@ public class BoardDaoTest {
         assertEquals(SUCCESS, insertResult);
 
         Integer bno = boardDto.getBno();
-        List<BoardDto> selectedList = boardDao.select(bno);
+        List<BoardDto> selectedList = boardDao.selectPage(bno);
         assertFalse(selectedList.isEmpty());
 
         BoardDto selected = selectedList.get(0);

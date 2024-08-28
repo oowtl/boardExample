@@ -34,6 +34,38 @@
         WHERE bno = #{bno}
     </select>
 
+    <select id="selectPage" parameterType="map" resultType="BoardDto">
+        SELECT bno,
+               title,
+               content,
+               writer,
+               view_cnt,
+               comment_cnt,
+               reg_date,
+               up_date
+        FROM spring_ch4.board
+        ORDER BY reg_date DESC, bno DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="selectAll" resultType="BoardDto">
+        SELECT bno,
+               title,
+               content,
+               writer,
+               view_cnt,
+               comment_cnt,
+               reg_date,
+               up_date
+        FROM spring_ch4.board
+    </select>
+
+    <select id="count" resultType="int">
+        SELECT
+            count(*)
+        FROM spring_ch4.board
+    </select>
+
 
     <update id="update" parameterType="BoardDto">
         UPDATE
@@ -49,9 +81,25 @@
             bno = #{bno}
     </update>
 
-    <delete id="delete" parameterType="int">
+    <update id="increaseViewCnt" parameterType="int">
+        UPDATE
+        spring_ch4.board
+        SET
+            view_cnt = view_cnt + 1
+        WHERE
+            bno = #{bno}
+    </update>
+
+    <delete id="delete" parameterType="map">
         DELETE
         FROM spring_ch4.board
-        WHERE bno = #{bno}
+        <where>
+            <if test="bno != null">
+                bno = #{bno}
+            </if>
+            <if test="writer != null">
+                AND writer = #{writer}
+            </if>
+        </where>
     </delete>
 </mapper>
