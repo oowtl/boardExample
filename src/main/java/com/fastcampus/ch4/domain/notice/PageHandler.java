@@ -30,7 +30,7 @@ public class PageHandler {
         }
         this.totalCnt = totalCnt;
         this.totalPage = calculateTotalPages(totalCnt);
-        this.beginPage = (page-1) / NAVI_SIZE * NAVI_SIZE + 1;
+        this.beginPage = calculateBeginPage();
         this.endPage = Math.min((beginPage + NAVI_SIZE - 1), totalPage);
         this.showPrev = beginPage > 1;
         this.showNext = endPage < totalPage;
@@ -44,6 +44,11 @@ public class PageHandler {
         // 전체 게시글 건수를 한 페이지 사이즈로 나눈다.
         // 나눈 나머지가 0이면 그대로, 1 이상이면 한 페이지를 더한다!
         return totalCnt / pageSize + (totalCnt % pageSize == 0 ? 0 : 1);
+    }
+
+    // 한 줄이면 그냥 생성자 내부에 쓰는 게 낫나?
+    private int calculateBeginPage() {
+        return (page-1) / NAVI_SIZE * NAVI_SIZE + 1;
     }
 
     /*
@@ -87,6 +92,9 @@ public class PageHandler {
     }
 
     public void setPage(int page) {
+        if (!isValidPage(page)) {
+            throw new IllegalArgumentException("Invalid page number : " + page);
+        }
         this.page = page;
     }
 
@@ -95,6 +103,9 @@ public class PageHandler {
     }
 
     public void setPageSize(int pageSize) {
+        if (!isValidPageSize(pageSize)) {
+            throw new IllegalArgumentException("Invalid page size : " + pageSize);
+        }
         this.pageSize = pageSize;
     }
 
