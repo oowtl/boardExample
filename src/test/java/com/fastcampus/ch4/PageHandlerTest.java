@@ -58,8 +58,9 @@ public class PageHandlerTest {
     @Test
     public void pageHandler값Test() {
         // 1 : 1페이지 테스트
-        PageHandler ph = new PageHandler(1, 150, 10);
-        assertEquals(1, ph.getCurrentPage());
+        PageHandler ph = new PageHandler
+                (1, 150, 10);
+        assertEquals(1, ph.getPage());
         assertEquals(15, ph.getTotalPage());
         assertEquals(false, ph.isShowPrev());
         assertEquals(true, ph.isShowNext());
@@ -68,7 +69,7 @@ public class PageHandlerTest {
 
         // 2 : showPrev == false
         ph = new PageHandler(10, 150, 10);
-        assertEquals(10, ph.getCurrentPage());
+        assertEquals(10, ph.getPage());
         assertEquals(15, ph.getTotalPage());
         assertEquals(false, ph.isShowPrev());
         assertEquals(true, ph.isShowNext());
@@ -77,7 +78,7 @@ public class PageHandlerTest {
 
         // 3 : showNext == false
         ph = new PageHandler(4, 90, 10);
-        assertEquals(4, ph.getCurrentPage());
+        assertEquals(4, ph.getPage());
         assertEquals(9, ph.getTotalPage());
         assertEquals(false, ph.isShowPrev());
         assertEquals(false, ph.isShowNext());
@@ -86,7 +87,7 @@ public class PageHandlerTest {
 
         // 4 : showNext == false, totalPage == 20
         ph = new PageHandler(15, 200, 10);
-        assertEquals(15, ph.getCurrentPage());
+        assertEquals(15, ph.getPage());
         assertEquals(20, ph.getTotalPage());
         assertEquals(true, ph.isShowPrev());
         assertEquals(false, ph.isShowNext());
@@ -95,7 +96,7 @@ public class PageHandlerTest {
 
         // 5 showPrev == true, showNext == true
         ph = new PageHandler(15, 210, 10);
-        assertEquals(15, ph.getCurrentPage());
+        assertEquals(15, ph.getPage());
         assertEquals(21, ph.getTotalPage());
         assertEquals(true, ph.isShowPrev());
         assertEquals(true, ph.isShowNext());
