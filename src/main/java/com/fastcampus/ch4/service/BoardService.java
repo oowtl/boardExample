@@ -16,6 +16,8 @@ public interface BoardService {
 
     BoardDto read(Map map) throws Exception;
 
+    BoardDto read(Integer bno) throws Exception;
+
     List<BoardDto> getPage(Map map) throws Exception;
 
     int modify(BoardDto boardDto) throws Exception;

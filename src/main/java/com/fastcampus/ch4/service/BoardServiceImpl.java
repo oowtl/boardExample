@@ -46,6 +46,16 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    public BoardDto read(Integer bno) throws Exception {
+        List<BoardDto> boardList = boardDao.selectPage(bno);
+
+        BoardDto boardDto = boardList.get(0);
+
+        boardDao.increaseViewCnt(bno);
+        return boardDto;
+    }
+
+    @Override
     public List<BoardDto> getPage(Map map) throws Exception {
         return boardDao.selectPage(map);
     }

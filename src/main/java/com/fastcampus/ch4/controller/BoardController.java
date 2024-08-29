@@ -50,6 +50,26 @@ public class BoardController {
         return "boardList"; // 로그인을 한 상태이면, 게시판 화면으로 이동
     }
 
+    @GetMapping("/read")
+    public String read(Integer bno, Integer page, Integer pageSize, HttpServletRequest request, Model model) {
+        // login check???
+
+        try {
+            // call service
+            BoardDto boardDto = boardService.read(bno);
+            model.addAttribute(boardDto);
+
+            // set model attr
+            model.addAttribute("page", page); // 이건 생략 안됨
+            model.addAttribute("pageSize", pageSize); // 이건 생략 안됨
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        // return
+        return "board";
+    }
+
     private boolean loginCheck(HttpServletRequest request) {
         // 1. 세션을 얻어서
         HttpSession session = request.getSession();
