@@ -53,6 +53,8 @@ public class BoardController {
     @GetMapping("/read")
     public String read(Integer bno, Integer page, Integer pageSize, HttpServletRequest request, Model model) {
         // login check???
+        if(!loginCheck(request))
+            return "redirect:/login/login?toURL="+request.getRequestURL();  // 로그인을 안했으면 로그인 화면으로 이동
 
         try {
             // call service
@@ -69,6 +71,53 @@ public class BoardController {
         // return
         return "board";
     }
+
+    /*
+    api : /board
+    method : DELETE
+    params : bno, writer, page, pageSize, request, model, redirectAttributes
+    return : msg
+    - success
+        msg=DEL_OK
+        redirect:/board/list?page=&PageSize=
+    - fail
+        msg=DEL_ERR
+        redirect:/board/read?bno=&page=&pageSize=
+        model.addFlashAttribute("msg", "DEL_FAIL");
+     */
+
+    @PostMapping("/remove")
+    public String remove(Integer page, Integer pageSize, Integer bno, String writer, Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        // login check
+        if(!loginCheck(request))
+            return "redirect:/login/login?toURL="+request.getRequestURL();  // 로그인을 안했으면 로그인 화면으로 이동
+
+        // call service
+        try {
+            // 되돌아가기 위한 Model attribute 설정
+            model.addAttribute("page", page);
+            model.addAttribute("pageSize", pageSize);
+
+            // 삭제
+            int result = boardService.remove(bno, writer);
+
+            // 삭제 성공 여부에 따라 다른 처리
+            if (result != 1)
+                throw new IllegalArgumentException("DEL_FAIL");
+
+            // 삭제 성공 메시지
+            redirectAttributes.addFlashAttribute("msg", "DEL_OK");
+
+            return "redirect:/board/list?page="+page+"&pageSize="+pageSize;
+
+        } catch (Exception e) {
+            // 삭제 실패 메시지
+            redirectAttributes.addFlashAttribute("msg", "DEL_FAIL");
+
+            return "redirect:/board/list?page="+page+"&pageSize="+pageSize;
+        }
+    }
+
 
     private boolean loginCheck(HttpServletRequest request) {
         // 1. 세션을 얻어서
