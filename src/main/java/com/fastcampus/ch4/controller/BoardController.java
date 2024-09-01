@@ -18,6 +18,87 @@ public class BoardController {
     @Autowired
     BoardService boardService;
 
+
+    /*
+    api : /board/write
+    method : GET
+    params : page, pageSize, request, model
+    return : String
+    role
+    - model.addAttribute("mode", "new");
+    - return "board"
+     */
+
+    @GetMapping("/write")
+    public String write(HttpServletRequest request, Model model) {
+        // login check
+        if(!loginCheck(request))
+            return "redirect:/login/login?toURL="+request.getRequestURL();  // 로그인을 안했으면 로그인 화면으로 이동
+
+        // model에 mode를 new로 설정
+        model.addAttribute("mode", "new");
+
+        // return
+        return "board";
+    }
+
+
+    /*
+    api : /board/write
+    method : POST
+    params : page, pageSize, boardDto, session, request, model, redirectAttributes
+    return : String
+    - success
+        msg=WRT_OK (redirectAttributes)
+        redirect:/board/list
+    - fail
+        msg=WRT_ERR (model)
+        model : boardDto
+        redirect:/board/write
+     */
+
+    @PostMapping("/write")
+    public String write(BoardDto boardDto, HttpSession session, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
+        // login check
+        if(!loginCheck(request))
+            return "redirect:/login/login?toURL="+request.getRequestURL();  // 로그인을 안했으면 로그인 화면으로 이동
+
+        // session에서 id를 얻어서 boardDto에 저장
+        String writer = (String) session.getAttribute("id");
+        boardDto.setWriter(writer);
+
+        // call service
+        try {
+            // write
+            int result = boardService.write(boardDto);
+
+            // write 성공 여부에 따라 다른 처리
+            if (result != 1)
+                throw new Exception("WRT_ERR");
+
+            // write 성공 메시지
+            redirectAttributes.addFlashAttribute("msg", "WRT_OK");
+
+            if (result == 1)
+                throw new Exception();
+
+            return "redirect:/board/list";
+
+        } catch (Exception e) {
+            // 작성한 boardDto를 다시 넘겨줌
+            // 실패 시에 boardDto 값 유지, 이후 새로고침 시에도 값 유지
+            model.addAttribute(boardDto);
+
+            // write 실패 메시지
+            model.addAttribute("msg", "WRT_ERR");
+
+            // POST "/board/write" 의 결과로 반환되는 결과
+            // model 안에 boardDto 가 존재하기 때문에 새로고침해도 boardDto 값이 유지됨
+            return "board";
+        }
+    }
+
+
     @GetMapping("/list")
     public String list(Integer page, Integer pageSize, HttpServletRequest request, Model model) {
         if(!loginCheck(request))
@@ -51,21 +132,29 @@ public class BoardController {
     }
 
     @GetMapping("/read")
-    public String read(Integer bno, Integer page, Integer pageSize, HttpServletRequest request, Model model) {
+    public String read(Integer bno, Integer page, Integer pageSize, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
         // login check???
         if(!loginCheck(request))
             return "redirect:/login/login?toURL="+request.getRequestURL();  // 로그인을 안했으면 로그인 화면으로 이동
 
+        // set model attr
+        model.addAttribute("page", page); // 이건 생략 안됨
+        model.addAttribute("pageSize", pageSize); // 이건 생략 안됨
+
         try {
             // call service
             BoardDto boardDto = boardService.read(bno);
-            model.addAttribute(boardDto);
 
-            // set model attr
-            model.addAttribute("page", page); // 이건 생략 안됨
-            model.addAttribute("pageSize", pageSize); // 이건 생략 안됨
+            // 게시물 조회 결과가 없을 때 예외 처리
+            if (boardDto == null)
+                throw new IllegalArgumentException("해당 게시물이 존재하지 않습니다.");
+
+            model.addAttribute(boardDto);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            // 게시물 조회 실패 메시지
+            redirectAttributes.addFlashAttribute("msg", "READ_ERR");
+
+            return "redirect:/board/list?page="+page+"&pageSize="+pageSize;
         }
 
         // return
@@ -118,6 +207,61 @@ public class BoardController {
         }
     }
 
+    /*
+    api : /board/modify
+    method : POST
+    params : boardDto, page, pageSize, bno, request, model, redirectAttributes
+    return : String
+    - success
+        msg=MOD_OK
+        redirect:/board/list?page=&pageSize=
+    - fail
+        model
+            - msg=MOD_ERR
+            - boardDto
+        return "board"
+    role
+    - login check (session)
+    - set writer (in session[id])
+    - call service
+    - modify 성공 시 return success case
+    - modify 실패 시
+        - Exception 발생
+        - return fail case
+     */
+
+    @PostMapping("/modify")
+    public String modify(BoardDto boardDto, Integer bno, HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
+        // login check
+        if(!loginCheck(request))
+            return "redirect:/login/login?toURL="+request.getRequestURL();  // 로그인을 안했으면 로그인 화면으로 이동
+
+        // session에서 id를 얻어서 boardDto에 저장
+        String writer = (String) request.getSession().getAttribute("id");
+        boardDto.setWriter(writer);
+
+        // call service
+        try {
+            // modify
+            int result = boardService.modify(boardDto);
+
+            // modify 성공 여부에 따라 다른 처리
+            if (result != 1)
+                throw new Exception("MOD_ERR");
+
+            // modify 성공 메시지
+            redirectAttributes.addFlashAttribute("msg", "MOD_OK");
+
+            return "redirect:/board/list";
+
+        } catch (Exception e) {
+            // modify 실패 메시지
+            model.addAttribute("msg", "MOD_ERR");
+            model.addAttribute(boardDto);
+
+            return "board";
+        }
+    }
 
     private boolean loginCheck(HttpServletRequest request) {
         // 1. 세션을 얻어서
