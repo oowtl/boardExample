@@ -30,6 +30,8 @@ public class HomeController {
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
 		
 		String formattedDate = dateFormat.format(date);
+
+		System.out.printf("The client locale is: %s\n", formattedDate);
 		
 		model.addAttribute("serverTime", formattedDate );
 		
